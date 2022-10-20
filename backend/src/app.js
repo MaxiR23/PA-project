@@ -7,6 +7,22 @@ import tasksRoutes from './routes/tasks.routes.js'
 import userRoutes from './routes/users.routes.js'
 
 import cors from 'cors';
+/* CONFIGURACION DE CORS */
+const whiteList = ['http://localhost:3001'];
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (whiteList.includes(origin)) {
+            //Puede consultar la API
+            callback(null,true);
+        } else {
+            /* No puede consultar */
+            callback(new Error('Error de Cors'))
+        }
+    }
+}
+
+
 import indexRouter from './routes/index.js' 
 
 const app = express();

@@ -1,7 +1,7 @@
 import Users from '../models/Users.js';
 import generateId from "../helpers/generarId.js"
 import generateJWT from "../helpers/generarJWT.js"
-import emailRegistro from '../helpers/email.js'
+import { emailRegistro, emailOlvidePassword } from '../helpers/email.js'
 
 async function signIn(request, response) {
 
@@ -51,14 +51,14 @@ async function auth(req, res) {
         return res.status(403).json({ msg: error.message })
     }
     /* comprobar su password*/
-    if (await user.checkPassword(password)) {
+    if (user.checkPassword(password)) {
         res.json({
             id: user.id,
             name: user.name,
             lastname: user.lastname,
             email: user.email,
             token: generateJWT(user.id)
-        })
+        }) 
     } else {
         const error = new Error('El password es incorrecto');
         return res.status(403).json({ msg: error.message })
@@ -102,6 +102,13 @@ async function resetPassword(req, res) {
         const tokenUpdated = await Users.findByPk(user.id);
         tokenUpdated.token = generateId();
         tokenUpdated.save();
+
+        //Enviamos el mail
+        emailOlvidePassword({
+            email: tokenUpdated.email,
+            name : tokenUpdated.name,
+            token: tokenUpdated.token
+        })
 
         res.json({ msg: 'Hemos enviado un e-mail con las instrucciones' })
     } catch (err) {

@@ -7,24 +7,30 @@ import ResetPassword from './pages/ResetPassword';
 import NewPassword from './pages/NewPassword';
 import Confirmaccount from './pages/Confirmaccount';
 import { ChakraProvider } from '@chakra-ui/react'
-
-const { REACT_APP_BACKEND_URL } = process.env;
-
-console.log(REACT_APP_BACKEND_URL)
+import { AuthProvider } from './context/AuthProvider';
+import Home from './pages/Home'
+import ProtectedRoutes from './layouts/ProtectedRoutes'
 
 function App() {
   return (
     <ChakraProvider>
       <BrowserRouter>
-        <Routes>
-          <Route path='/' element={<AuthLayout />}>
-            <Route index element={<Login />}></Route> {/* index indica cual elemento se va a cargar al ir a la path='/' */}
-            <Route path='register' element={<Register />}></Route> {/* ya no nos hace falta ponerle /register porq ya lo hereda del path principal */}
-            <Route path='reset-password' element={<ResetPassword />}></Route>
-            <Route path='reset-password/:token' element={<NewPassword />}></Route>
-            <Route path='confirm/:id' element={<Confirmaccount />}></Route>
-          </Route>
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path='/' element={<AuthLayout />}>
+              <Route index element={<Login />}></Route> {/* index indica cual elemento se va a cargar al ir a la path='/' */}
+              <Route path='register' element={<Register />}></Route> {/* ya no nos hace falta ponerle /register porq ya lo hereda del path principal */}
+              <Route path='reset-password' element={<ResetPassword />}></Route>
+              <Route path='reset-password/:token' element={<NewPassword />}></Route>
+              <Route path='confirm/:id' element={<Confirmaccount />}></Route>
+            </Route>
+
+            {/* Si un usuario no esta autentificado no podrá acceder al resto de componentes */}
+            <Route path='/home' element={<ProtectedRoutes/>}>
+              <Route index element={<Home/>} />
+            </Route>
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </ChakraProvider>
   );

@@ -8,17 +8,17 @@ const checkAuth = async (req, res, next) => {
     let token;
 
     if (req.headers.authorization && 
-        req.headers.authorization.startswith('Bearer')) { /* si hay un bearer vamos a obtener el token */
+        req.headers.authorization.startsWith("Bearer")) { /* si hay un bearer vamos a obtener el token */
 
         /* extraemos el token desde headers */
             try {
                 token = req.headers.authorization.split(" ")[1]; 
                 const decoded = jwt.verify(token, process.env.JWT_SECRET); /* lee el token por verify */
                 //TODO: revisar si esta expirado.
-                req.user = await Usuario.findById(decoded.id).select('-password -confirmado -token -createdAt -updatedAt');     
+                req.user = await Users.findByPk(decoded.id);     
                 return next(); /* una vez que verificamos el token pasamos al siguiente middleware */
             } catch (error) {
-                return res.status(404).json({msg: 'Hubo un error'})
+                return res.status(404).json({msg: 'Hubo un error chequeando Auth'})
             }
     }
 

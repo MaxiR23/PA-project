@@ -46,14 +46,12 @@ async function hashPassword(user) {
 
 Users.addHook('beforeCreate', hashPassword);
 Users.addHook('beforeUpdate', hashPassword)
-
 /* add a custom method */
-Users.prototype.checkPassword = async function (formPassword, users) {
+Users.prototype.checkPassword = function (formPassword) {
     /* compare va a comprobar un string no hasheado con uno que si lo esta y nos dirá si es el mismo */
     console.log('formPass:' ,formPassword)
     console.log('Pass:', this.password)
-    return await bcrypt.compare(formPassword, this.password); /* comprobará si el password que pasamos por form es el mismo que esta en la db */
-    
+    return bcrypt.compare(formPassword, this.password) /* comprobará si el password que pasamos por form es el mismo que esta en la db */
     /*Ver: https://github.com/kelektiv/node.bcrypt.js#with-promises */
 } 
 

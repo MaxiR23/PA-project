@@ -19,7 +19,7 @@ import { Link as ReactLink } from 'react-router-dom';
 import { useState } from 'react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import CustomAlert from '../components/CustomAlert';
-import axios from 'axios'
+import clienteAxios from '../config/clienteAxios';
 
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
@@ -41,7 +41,7 @@ export default function Register() {
         }
 
         try {
-            const { data } = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/users/signin`,
+            const { data } = await clienteAxios.post(`/users/signin`,
                 { name, lastname, email, password })
 
             console.log(data)
@@ -60,11 +60,10 @@ export default function Register() {
         }
     }
     /* extraemos el msg del alert, no existirá la primera vez. */
-    const { msg } = alert;
 
     return (
         <>
-            {msg && <CustomAlert msg={alert.msg} error={alert.error} />} {/* pero cuando exista mostrará el custom alert */}
+            {alert && <CustomAlert msg={alert.msg} error={alert.error} />} {/* pero cuando exista mostrará el custom alert */}
 
             <Flex
                 minH={'100vh'}
