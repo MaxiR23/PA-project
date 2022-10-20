@@ -2,6 +2,7 @@ import React from 'react';
 
 const CustomAlert = ({ msg, error }) => {
 
+    //TODO: Incorporar TOAST.
     return (
         <>
             {error ?

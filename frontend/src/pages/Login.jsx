@@ -15,7 +15,6 @@ import {
 
 import { useState } from 'react';
 import { Link as ReactLink } from 'react-router-dom';
-import clienteAxios from '../config/clienteAxios';
 import CustomAlert from '../components/CustomAlert';
 import useAuth from '../hooks/useAuth';
 
@@ -25,9 +24,10 @@ export default function SimpleCard() {
     const [password, setPassword] = useState('')
     const [alert, setAlert] = useState({})
 
-    const { setAuth } = useAuth();
+    const { loginConEmailyPassword } = useAuth();
 
     async function handleSubmit() {
+        //TODO: usar trim()
         if ([email, password].includes('')) {
             setAlert({
                 msg: 'Campos obligatorios',
@@ -37,10 +37,8 @@ export default function SimpleCard() {
         }
 
         try {
-            const { data } = await clienteAxios.post(`/users/login`, { email, password })
-            setAlert({ })
-            localStorage.setItem('token', data.token);
-            setAuth(data)
+            await loginConEmailyPassword(email, password);
+            setAlert({})
         } catch (error) {
 
             setAlert({

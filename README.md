@@ -5,9 +5,9 @@ Destiné este repositorio al aprendizaje de como hacer un sistema de registros d
 
 ## Tech Stack
 
-**Client:** React, Chakra UI, MailTrap
+**Client:** React, Chakra UI
 
-**Server:** Node, Express
+**Server:** Node, Express, MailTrap
 
 
 ## Documentation
