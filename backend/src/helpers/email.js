@@ -52,7 +52,6 @@ export const emailOlvidePassword = async (datos) => {
     });
 
     /* Informacion del email */
-
     const info = await transport.sendMail({
         from: '"PA project - Admin" <cuentas@paproject.com>',
         to: email,

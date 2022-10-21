@@ -238,17 +238,9 @@ const NAV_ITEMS: Array<NavItem> = [
     label: 'Mi cuenta',
     children: [
       {
-        label: 'Mi cuenta',
-        link: '/myaccount'
-      },
-      {
         label: 'Cerrar sesión',
         link: '/'
       },
-      {
-        label: 'Registrarse',
-        link: '/'
-      }
     ]
   }
 ];

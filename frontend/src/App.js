@@ -14,8 +14,8 @@ import ProtectedRoutes from './layouts/ProtectedRoutes'
 function App() {
   return (
     <ChakraProvider>
-      <BrowserRouter>
-        <AuthProvider>
+      <AuthProvider>
+        <BrowserRouter>
           <Routes>
             <Route path='/' element={<AuthLayout />}>
               <Route index element={<Login />}></Route> {/* index indica cual elemento se va a cargar al ir a la path='/' */}
@@ -26,12 +26,12 @@ function App() {
             </Route>
 
             {/* Si un usuario no esta autentificado no podrá acceder al resto de componentes */}
-            <Route path='/home' element={<ProtectedRoutes/>}>
-              <Route index element={<Home/>} />
+            <Route path='/home' element={<ProtectedRoutes />}>
+              <Route index element={<Home />} />
             </Route>
           </Routes>
-        </AuthProvider>
-      </BrowserRouter>
+        </BrowserRouter>
+      </AuthProvider>
     </ChakraProvider>
   );
 }

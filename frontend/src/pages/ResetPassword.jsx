@@ -7,17 +7,18 @@ import {
   Stack,
   Text,
   useColorModeValue,
-  Container,
 } from '@chakra-ui/react';
 
 import { useState } from 'react';
 import CustomAlert from '../components/CustomAlert';
-import clienteAxios from '../config/clienteAxios';
+import useAuth from '../hooks/useAuth';
 
 export default function ResetPassword(): JSX.Element {
 
   const [email, setEmail] = useState('');
   const [alert, setAlert] = useState({})
+
+  const { resetPassword } = useAuth();
 
   async function handleSubmit() {
     //TODO: implementar una expresion regular para mejorar el control del email
@@ -31,11 +32,9 @@ export default function ResetPassword(): JSX.Element {
     }
 
     try {
-      const {data} = await clienteAxios.post(
-        `/users/reset-password`, {email})
-
+      const data = await resetPassword(email);
       setAlert({
-        msg:data.msg,
+        msg: data.msg,
         error: false,
       })
 
@@ -43,18 +42,16 @@ export default function ResetPassword(): JSX.Element {
       console.warn(error.respose)
       setAlert({
         msg: error.respose.data.msg,
-        error:true
+        error: true
       })
     }
 
   }
 
+  const { msg } = alert;
+
   return (
     <>
-    <Container>
-      {alert && <CustomAlert msg={alert.msg} error={alert.error}/>}
-    </Container>
-    
       <Flex
         minH={'100vh'}
         align={'center'}
@@ -69,13 +66,14 @@ export default function ResetPassword(): JSX.Element {
           boxShadow={'lg'}
           p={6}
           my={12}>
+          {msg && <CustomAlert alert={alert} />}
           <Heading lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
-            Forgot your password?
+            Olvidaste tu contraseña?
           </Heading>
           <Text
             fontSize={{ base: 'sm', sm: 'md' }}
             color={useColorModeValue('gray.800', 'gray.400')}>
-            You&apos;ll get an email with a reset link
+            Recibirás un correo electrónico con los pasos a seguir para restablecer contraseña
           </Text>
           <FormControl id="email">
             <Input
@@ -94,7 +92,7 @@ export default function ResetPassword(): JSX.Element {
               _hover={{
                 bg: 'blue.500',
               }}>
-              Request Reset
+              Solicitar nueva contraseña
             </Button>
           </Stack>
         </Stack>

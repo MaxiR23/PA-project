@@ -11,16 +11,19 @@ import {
 } from '@chakra-ui/react';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import CustomAlert from '../components/CustomAlert';
-import clienteAxios from '../config/clienteAxios';
+import useAuth from '../hooks/useAuth';
 
 export default function NewPassword(): JSX.Element {
 
-  const [alert, setAlert] = useState({})
+  const [alert, setAlert] = useState({});
   const [password, setPassword] = useState('');
+  const { checkTokenByParameters, newPassword } = useAuth();
 
   const params = useParams();
+  const navigate = useNavigate();
+
   const { token } = params;
 
   //TODO: SI EL TOKEN NO ES VALIDO, NO MOSTRAR EL FORM.
@@ -28,17 +31,17 @@ export default function NewPassword(): JSX.Element {
   useEffect(() => {
     const comprobarToken = async () => {
       try {
-        
-        const { data } = await clienteAxios(`/users/reset-password/${token}`)
+
+        const data = await checkTokenByParameters(token);
 
         setAlert({
           msg: data.msg,
-          error: true,
+          error: false,
         })
 
       } catch (error) {
         setAlert({
-          msg: error.message.response.data.msg,
+          msg: error.response.data.msg,
           error: true,
         })
       }
@@ -48,7 +51,7 @@ export default function NewPassword(): JSX.Element {
   }, [])
 
   async function handleSubmit(params) {
-    if (password.length < 6) {
+    if (password.length <= 6) {
       setAlert({
         msg: 'La contraseña debe ser de mínimo 6 caracteres',
         error: true
@@ -57,12 +60,18 @@ export default function NewPassword(): JSX.Element {
     }
 
     try {
-      const { data } = await clienteAxios.post(`/users/reset-password/${token}`, { password })
+      /* Cambiamos la contraseña */
+      const data = await newPassword(token, password)
       console.log(data)
       setAlert({
         msg: data.msg,
         error: false
       })
+
+      setTimeout(() => {
+        navigate('/')
+      }, 2000)
+
     } catch (error) {
       console.log(error)
       setAlert({
@@ -72,11 +81,11 @@ export default function NewPassword(): JSX.Element {
     }
   }
 
+  const { msg } = alert;
+
   return (
     //TODO: Redirigir al Login
     <>
-      {alert && <CustomAlert msg={alert.msg} error={alert.error} />}
-
       <Flex
         minH={'100vh'}
         align={'center'}
@@ -91,25 +100,28 @@ export default function NewPassword(): JSX.Element {
           boxShadow={'lg'}
           p={6}
           my={12}>
+
+          {msg && <CustomAlert alert={alert} />}
+          
           <Heading lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
-            Enter new password
+            Introducir nueva contraseña
           </Heading>
           <FormControl id="password" isRequired>
-            <FormLabel>Password</FormLabel>
-            <Input 
-            type="password" 
-            value={password}
-            onChange={(e)=> setPassword(e.target.value)}/>
+            <FormLabel>Contraseña</FormLabel>
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)} />
           </FormControl>
           <Stack spacing={6}>
             <Button
-            onClick={handleSubmit}
+              onClick={handleSubmit}
               bg={'blue.400'}
               color={'white'}
               _hover={{
                 bg: 'blue.500',
               }}>
-              Submit
+              Enviar
             </Button>
           </Stack>
         </Stack>

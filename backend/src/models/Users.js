@@ -37,22 +37,14 @@ const Users = sequelize.define('users', {
 });
 
 //Uso: guardar el hash del password en la DB.
-async function hashPassword(user) {
+function hashPassword(user) {
     if (user.password) {
-        const salt = await bcrypt.genSalt(10);
-        user.password = bcrypt.hashSync(user.password, salt)
+        const saltRounds = (10);
+        user.password = bcrypt.hashSync(user.password, saltRounds)
     }
 }
 
 Users.addHook('beforeCreate', hashPassword);
 Users.addHook('beforeUpdate', hashPassword)
-/* add a custom method */
-Users.prototype.checkPassword = function (formPassword) {
-    /* compare va a comprobar un string no hasheado con uno que si lo esta y nos dirá si es el mismo */
-    console.log('formPass:' ,formPassword)
-    console.log('Pass:', this.password)
-    return bcrypt.compare(formPassword, this.password) /* comprobará si el password que pasamos por form es el mismo que esta en la db */
-    /*Ver: https://github.com/kelektiv/node.bcrypt.js#with-promises */
-} 
 
 export default Users;

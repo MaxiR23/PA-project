@@ -18,7 +18,8 @@ const checkAuth = async (req, res, next) => {
                 req.user = await Users.findByPk(decoded.id);     
                 return next(); /* una vez que verificamos el token pasamos al siguiente middleware */
             } catch (error) {
-                return res.status(404).json({msg: 'Hubo un error chequeando Auth'})
+                /* return res.status(404).json({msg: 'Hubo un error chequeando Auth'}) */
+                console.warn(error)
             }
     }
 

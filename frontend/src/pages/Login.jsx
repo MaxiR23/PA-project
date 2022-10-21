@@ -17,6 +17,7 @@ import { useState } from 'react';
 import { Link as ReactLink } from 'react-router-dom';
 import CustomAlert from '../components/CustomAlert';
 import useAuth from '../hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 
 export default function SimpleCard() {
 
@@ -24,7 +25,9 @@ export default function SimpleCard() {
     const [password, setPassword] = useState('')
     const [alert, setAlert] = useState({})
 
-    const { loginConEmailyPassword } = useAuth();
+    const { signInWithEmailAndPassword } = useAuth();
+
+    const navigate = useNavigate();
 
     async function handleSubmit() {
         //TODO: usar trim()
@@ -37,8 +40,9 @@ export default function SimpleCard() {
         }
 
         try {
-            await loginConEmailyPassword(email, password);
+            await signInWithEmailAndPassword(email, password);
             setAlert({})
+            navigate('/home')
         } catch (error) {
 
             setAlert({
@@ -48,9 +52,10 @@ export default function SimpleCard() {
         }
     }
 
+    const { msg } = alert;
+
     return (
         <>
-            {alert && <CustomAlert msg={alert.msg} error={alert.error} />}
             <Flex
                 minH={'100vh'}
                 align={'center'}
@@ -58,11 +63,14 @@ export default function SimpleCard() {
                 bg={useColorModeValue('gray.50', 'gray.800')}>
                 <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
                     <Stack align={'center'}>
-                        <Heading fontSize={'4xl'}>Sign in to your account</Heading>
+                        <Heading fontSize={'4xl'}>Ingresa a tu cuenta</Heading>
                         <Text fontSize={'lg'} color={'gray.600'}>
-                            to enjoy all of our cool <Link color={'blue.400'}>features</Link> ✌️
+                            Para disfrutar todas nuestras <Link color={'blue.400'}>functiones</Link> ✌️
                         </Text>
                     </Stack>
+
+                    {msg && <CustomAlert alert={alert} />}
+
                     <Box
                         rounded={'lg'}
                         bg={useColorModeValue('white', 'gray.700')}
@@ -70,14 +78,14 @@ export default function SimpleCard() {
                         p={8}>
                         <Stack spacing={4}>
                             <FormControl id="email">
-                                <FormLabel>Email address</FormLabel>
+                                <FormLabel>Correo electrónico</FormLabel>
                                 <Input
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)} />
                             </FormControl>
                             <FormControl id="password">
-                                <FormLabel>Password</FormLabel>
+                                <FormLabel>Contraseña</FormLabel>
                                 <Input
                                     type="password"
                                     value={password}
@@ -88,8 +96,8 @@ export default function SimpleCard() {
                                     direction={{ base: 'column', sm: 'row' }}
                                     align={'start'}
                                     justify={'space-between'}>
-                                    <Checkbox>Remember me</Checkbox>
-                                    <Link as={ReactLink} to={'reset-password'} color={'blue.400'}>Forgot password?</Link>
+                                    <Checkbox>Recordame</Checkbox>
+                                    <Link as={ReactLink} to={'reset-password'} color={'blue.400'}>Olvidaste la contraseña?</Link>
                                 </Stack>
                                 <Button
                                     onClick={handleSubmit}
@@ -98,7 +106,7 @@ export default function SimpleCard() {
                                     _hover={{
                                         bg: 'blue.500',
                                     }}>
-                                    Sign in
+                                    Ingresar
                                 </Button>
 
                                 <Text textAlign={'center'} fontSize={'lg'} color={'gray.600'}>

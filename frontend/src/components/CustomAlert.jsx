@@ -1,31 +1,27 @@
 import React from 'react';
+import { Container, Text } from '@chakra-ui/react'
 
-const CustomAlert = ({ msg, error }) => {
+const CustomAlert = ({ alert }) => {
 
-    //TODO: Incorporar TOAST.
+    const showAlert = () => {
+        if (alert.error) {
+            return <Container style={{
+                backgroundColor: 'red',
+            }}>
+                <Text fontSize={'xl'} textAlign={'center'} textColor={'white'} padding={'6px'}> {alert.msg} </Text>
+            </Container>
+        } else {
+            return <Container style={{
+                backgroundColor: 'blue',
+            }}>
+                <Text fontSize={'xl'} textAlign={'center'} textColor={'white'} padding={'6px'}> {alert.msg} </Text>
+            </Container>
+        }
+    }
+
     return (
         <>
-            {error ?
-                <div style={{
-                    padding: '10px',
-                    display:'flex',
-                    flexDirection:'row',
-                    justifyContent:'center',
-                    backgroundColor:'red'
-                }}>
-                    <b style={{color:'white'}}> {msg} </b>
-                </div>
-                :
-                <div style={{
-                    padding: '10px',
-                    display:'flex',
-                    flexDirection:'row',
-                    justifyContent:'center',
-                    backgroundColor:'blue'
-                }}>
-                    <b style={{color:'white'}}> {msg} </b>
-                </div>
-            }
+            {showAlert()}
         </>
     )
 }

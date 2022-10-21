@@ -10,7 +10,7 @@ import {
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import CustomAlert from '../components/CustomAlert';
-import clienteAxios from '../config/clienteAxios';
+import useAuth from '../hooks/useAuth';
 
 export default function ConfirmAccoun(): JSX.Element {
 
@@ -20,14 +20,15 @@ export default function ConfirmAccoun(): JSX.Element {
   /* extramos el id de params ejecutando un destructuring */
   const { id } = params;
 
+  const { confirmAccount } = useAuth();
+
   /* requerimos el useEffect con el arreglo vacio [] para que se ejecute una sola vez.
   Al ser una variable estatica {token} pasada por url y no requerir de ninguna acción del usuario como para pasarle una dependencia */
   useEffect(() => {
-    const confirmAccount = async () => {
+    const confirmAcc = async () => {
       try {
         /* axios tiene el GET por default */
-        const { data } = await clienteAxios(`/users/confirm/${id}`);
-        
+        const data = await confirmAccount(id);
         setAlert({
           msg: data.msg,
           error: false
@@ -41,8 +42,10 @@ export default function ConfirmAccoun(): JSX.Element {
       }
     }
 
-    confirmAccount();
+    confirmAcc();
   }, [])
+
+  const { msg } = alert;
 
   return (
     <>
@@ -67,7 +70,7 @@ export default function ConfirmAccoun(): JSX.Element {
       </Flex>
 
       <Container>
-        {alert && <CustomAlert msg={alert.msg} error={alert.error} />}
+        {msg && <CustomAlert alert={alert} />}
       </Container>
 
       {/* TODO: CREAR UN LINK QUE MANDE A INICIO DE SESIÓN CON LINK O MANDARLO CON UN TIMEOUT Y USENAVIGATE */}

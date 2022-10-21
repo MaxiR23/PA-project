@@ -19,7 +19,7 @@ import { Link as ReactLink } from 'react-router-dom';
 import { useState } from 'react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import CustomAlert from '../components/CustomAlert';
-import clienteAxios from '../config/clienteAxios';
+import useAuth from '../hooks/useAuth';
 
 export default function Register() {
     const [showPassword, setShowPassword] = useState(false);
@@ -31,6 +31,8 @@ export default function Register() {
     const [repeatPassword, setRepeatPassword] = useState('')
     const [alert, setAlert] = useState({})
 
+    const { register } = useAuth();
+
     const handleSubmit = async () => {
         if ([name, lastname, email, password, repeatPassword].includes('')) {
             setAlert({
@@ -41,10 +43,7 @@ export default function Register() {
         }
 
         try {
-            const { data } = await clienteAxios.post(`/users/signin`,
-                { name, lastname, email, password })
-
-            console.log(data)
+            const data = await register(name, lastname, email, password);
             setAlert({ msg: data.msg, error: false })
 
             setName('')
@@ -55,15 +54,15 @@ export default function Register() {
 
         } catch (error) {
             //MAS INFO Acerca de error.response: https://axios-http.com/es/docs/handling_errors
-            console.warn(error.response)  //TODO: Darle feedback al usuario.
-            /* setAlert({ msg: error.response.data.msg, error: true }) */
+            setAlert({ msg: error.response.data.msg, error: true })
         }
     }
-    /* extraemos el msg del alert, no existirá la primera vez. */
+
+    const { msg } = alert;
 
     return (
         <>
-            {alert && <CustomAlert msg={alert.msg} error={alert.error} />} {/* pero cuando exista mostrará el custom alert */}
+            {msg && <CustomAlert alert={alert} />} {/* pero cuando exista mostrará el custom alert */}
 
             <Flex
                 minH={'100vh'}
@@ -73,10 +72,10 @@ export default function Register() {
                 <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
                     <Stack align={'center'}>
                         <Heading fontSize={'4xl'} textAlign={'center'}>
-                            Sign up
+                            Registrate
                         </Heading>
                         <Text fontSize={'lg'} color={'gray.600'}>
-                            to enjoy all of our cool features ✌️
+                            para disfrutar todas las funcionalidades
                         </Text>
                     </Stack>
                     <Box
@@ -88,23 +87,23 @@ export default function Register() {
                             <HStack>
                                 <Box>
                                     <FormControl id="firstName" isRequired>
-                                        <FormLabel>First Name</FormLabel>
+                                        <FormLabel>Nombre</FormLabel>
                                         <Input type="text" value={name} onChange={e => setName(e.target.value)} />
                                     </FormControl>
                                 </Box>
                                 <Box>
-                                    <FormControl id="lastName">
-                                        <FormLabel>Last Name</FormLabel>
+                                    <FormControl id="lastName" isRequired>
+                                        <FormLabel>Apellido</FormLabel>
                                         <Input type="text" value={lastname} onChange={e => setLastname(e.target.value)} />
                                     </FormControl>
                                 </Box>
                             </HStack>
                             <FormControl id="email" isRequired>
-                                <FormLabel>Email address</FormLabel>
+                                <FormLabel>Correo electrónico</FormLabel>
                                 <Input type="email" value={email} onChange={e => setEmail(e.target.value)} />
                             </FormControl>
                             <FormControl id="password" isRequired>
-                                <FormLabel>Password</FormLabel>
+                                <FormLabel>Contraseña</FormLabel>
                                 <InputGroup>
                                     <Input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} />
                                     <InputRightElement h={'full'}>
@@ -119,7 +118,7 @@ export default function Register() {
                                 </InputGroup>
                             </FormControl>
                             <FormControl id="repeat-password" isRequired>
-                                <FormLabel>Repeat Password</FormLabel>
+                                <FormLabel>Repetir contraseña</FormLabel>
                                 <InputGroup>
                                     <Input type={showPassword ? 'text' : 'password'} value={repeatPassword} onChange={(e) => setRepeatPassword(e.target.value)} />
                                     <InputRightElement h={'full'}>
@@ -143,12 +142,12 @@ export default function Register() {
                                     _hover={{
                                         bg: 'blue.500',
                                     }}>
-                                    Sign up
+                                    Registrate
                                 </Button>
                             </Stack>
                             <Stack pt={6}>
                                 <Text align={'center'}>
-                                    Already a user? <Link as={ReactLink} to={'/'} color={'blue.400'}>Login</Link>
+                                    Ya tenes una cuenta? <Link as={ReactLink} to={'/'} color={'blue.400'}>Iniciar sesión</Link>
                                 </Text>
                             </Stack>
                         </Stack>
