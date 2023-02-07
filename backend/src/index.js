@@ -22,10 +22,9 @@ const corsOptions = {
     }
 }
 
-async function main() {
-
+const main = async () => {
     const PORT = process.env.PORT || 3000;
-
+    /* Solucionar nuevo problema de cors */
     try {
         let app = express();
         app.use(cors(corsOptions)) // Permitimos el acceso público a la API
@@ -41,6 +40,3 @@ async function main() {
 }
 
 main();
-
-
-

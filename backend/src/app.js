@@ -2,7 +2,7 @@
 import { sequelize } from "./database/database.js";
 import indexRouter from './routes/index.js' 
 
-async function initialize(app) {
+const initialize = async (app) => {
     await sequelize.sync();
     app.use('/', indexRouter)
     return app;

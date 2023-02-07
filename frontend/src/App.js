@@ -11,7 +11,7 @@ import { AuthProvider } from './context/AuthProvider';
 import Home from './pages/Home'
 import ProtectedRoutes from './layouts/ProtectedRoutes'
 
-function App() {
+const App = () => {
   return (
     <ChakraProvider>
       <AuthProvider>

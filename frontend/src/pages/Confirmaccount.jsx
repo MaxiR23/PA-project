@@ -8,9 +8,10 @@ import {
 } from '@chakra-ui/react';
 
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import CustomAlert from '../components/CustomAlert';
 import useAuth from '../hooks/useAuth';
+
 
 export default function ConfirmAccoun(): JSX.Element {
 
@@ -19,6 +20,7 @@ export default function ConfirmAccoun(): JSX.Element {
   const params = useParams();
   /* extramos el id de params ejecutando un destructuring */
   const { id } = params;
+  const navigate = useNavigate();
 
   const { confirmAccount } = useAuth();
 
@@ -33,6 +35,10 @@ export default function ConfirmAccoun(): JSX.Element {
           msg: data.msg,
           error: false
         })
+
+        setTimeout(() => {
+          navigate('/')
+        }, 2000)
 
       } catch (error) {
         setAlert({
@@ -64,7 +70,7 @@ export default function ConfirmAccoun(): JSX.Element {
           p={6}
           my={12}>
           <Heading lineHeight={1.1} fontSize={{ base: '2xl', md: '3xl' }}>
-            Confirma tu cuenta
+            Cuenta confirmada
           </Heading>
         </Stack>
       </Flex>

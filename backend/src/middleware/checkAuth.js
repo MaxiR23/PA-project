@@ -12,7 +12,7 @@ const checkAuth = async (req, res, next) => {
 
         /* extraemos el token desde headers */
             try {
-                token = req.headers.authorization.split(" ")[1]; 
+                token = req.headers.authorization.split(' ')[1]; 
                 const decoded = jwt.verify(token, process.env.JWT_SECRET); /* lee el token por verify */
                 //TODO: revisar si esta expirado.
                 req.user = await Users.findByPk(decoded.id);     

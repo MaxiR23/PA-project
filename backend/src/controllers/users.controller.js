@@ -4,17 +4,13 @@ import generateJWT from "../helpers/generarJWT.js"
 import { emailRegistro, emailOlvidePassword } from '../helpers/email.js'
 import bcrypt from 'bcrypt'
 
-async function signIn(request, response) {
-
-    const { email } = request.body;
+const signIn = async (request, response) => { //TODO: Cambiar por singUp
+    const { name, lastname, email, password } = request.body;
     const userExist = await Users.findOne({ where: { email } });
     //A: Concurrencia: E-mail unique en el modelo Users.
-
     try {
 
-        const storedUser = new Users(request.body);
-        storedUser.token = generateId()
-        await Users.create(storedUser.dataValues);
+        const storedUser = await Users.crearDeForm(name, lastname, email, password);
 
         /* enviamos el mail una vez que el usuario se registró a la base de datos */
         emailRegistro({
@@ -27,8 +23,10 @@ async function signIn(request, response) {
 
     } catch (error) {
 
+        throw(error);
+
         if (error.message == 'Validation error') { //TODO: Comparar excepcion por tipo.
-            const error = new Error('Usuario ya registrado')
+            const error = new Error('Usuario ya registrado') //TODO:Necesito Error o paso directo el msg
             return response.status(400).json({ msg: error.message, status: 'error' })
         }
 
@@ -36,12 +34,14 @@ async function signIn(request, response) {
     }
 }
 
-const checkPassword = (formPassword, user) => {
-    return bcrypt.compare(formPassword, user);
+const checkPassword = async (formPassword, dbPassword) => {
+    const compare = await bcrypt.compare(formPassword, dbPassword);
+    console.log('Checkpassword: ', {compare,formPassword,dbPassword}) //TODO: SEC!!
+    return compare;
 }
 
 //Uso: se invoca para revisar usuario y clave
-async function auth(req, res) {
+const auth = async (req, res) => {
     const { email, password } = req.body;
     /* comprobar si el usuario existe */
     const user = await Users.findOne({ where: { email } });
@@ -56,7 +56,7 @@ async function auth(req, res) {
         return res.status(403).json({ msg: error.message })
     }
     /* comprobar su password*/
-    if (await checkPassword(password, user.password)) {
+    if (await checkPassword(password, user.password)) { //A: Si da el mismo hash que la db
         res.json({
             id: user.id,
             name: user.name,
@@ -71,7 +71,7 @@ async function auth(req, res) {
 }
 
 /* al estar los valores en la url necesitaremos req.params para acceder a ellos*/
-async function confirmUser(req, res) {
+const confirmUser = async (req, res) => {
     const { token } = req.params; /* pido el token por parametro */
     const confirmUser = await Users.findOne({ where: { token } }); /* busco el usuario que contiene dicho token */
 
@@ -93,7 +93,7 @@ async function confirmUser(req, res) {
     }
 }
 
-async function resetPassword(req, res) {
+const resetPassword = async (req, res) => {
     const { email } = req.body;
     /* comprobamos si el usuario que quiere utilizar contraseña existe */
     const user = await Users.findOne({ where: { email } });
@@ -120,11 +120,9 @@ async function resetPassword(req, res) {
         console.warn(err)
         //TODO: Devolver un msg de error.
     }
-
 }
 
-/* validamos el token para cambiar el password */
-async function checkToken(req, res) {
+const checkToken = async (req, res) => {
     const { token } = req.params;
     /* retorna el primer resultado que sea correcto */
     const validToken = await Users.findOne({ where: { token } })
@@ -137,7 +135,7 @@ async function checkToken(req, res) {
     }
 }
 
-async function newPassword(req, res) {
+const newPassword = async (req, res) => {
     const { token } = req.params; /* traemos el token */
     const { password } = req.body; /* requerimos el nuevo password que esta tipeado el usuario en form */
 
@@ -146,11 +144,9 @@ async function newPassword(req, res) {
 
     /* si es valido vamos a guardar la nueva contraseña traida por req.body */
     if (user) {
-        const userUpdated = await Users.findByPk(user.id);
-        userUpdated.password = password;
-        console.log(userUpdated)
-        userUpdated.token = '';
+        const userUpdated = await Users.nuevaContraseña(user.id, password)
         try {
+            console.log('userUpdated DESDE CONTROLLERS', userUpdated)
             await userUpdated.save();
             res.json({ msg: 'Contraseña modificada correctamente' })
         } catch (error) {
@@ -160,10 +156,9 @@ async function newPassword(req, res) {
         const error = new Error('Token no valido');
         return res.status(404).json({ msg: error.message })
     }
-
 }
 
-async function profile(req, res) {
+const profile = (req, res) => {
     const { user } = req
     res.json(user)
 }
